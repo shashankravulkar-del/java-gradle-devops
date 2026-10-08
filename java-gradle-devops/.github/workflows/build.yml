@@ -1,0 +1,73 @@
+name: CI Build & Test Pipeline
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build, Test & Package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up OpenJDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Grant Execute Permission to Gradle Wrapper
+        run: chmod +x gradlew
+
+      - name: Validate Gradle Wrapper
+        uses: gradle/actions/wrapper-validation@v3
+
+      - name: Run Unit Tests
+        run: ./gradlew test --no-daemon
+
+      - name: Publish Test Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: junit-test-reports
+          path: build/reports/tests/test/
+          retention-days: 7
+
+      - name: Build Executable Boot JAR
+        run: ./gradlew bootJar --no-daemon
+
+      - name: Archive Built Application JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-gradle-devops-jar
+          path: build/libs/*.jar
+          retention-days: 14
+
+  docker-lint-build:
+    name: Verify Docker Container Build
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: java-gradle-devops:ci-check

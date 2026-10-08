@@ -1,0 +1,46 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.4'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.devops'
+version = '1.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Spring Boot Web Starter for REST API endpoints
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Spring Boot Actuator for health checks and operational metrics
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // Testing dependencies: JUnit 5, AssertJ, Mockito, Spring Test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+    }
+}
+
+bootJar {
+    archiveBaseName = 'java-gradle-devops'
+    archiveVersion = '1.0.0'
+}
+
+jar {
+    enabled = false // Disable plain jar in favor of executable bootJar
+}

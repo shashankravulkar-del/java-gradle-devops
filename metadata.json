@@ -1,0 +1,6 @@
+{
+  "name": "Java Gradle DevOps Application",
+  "description": "Production-ready Java Spring Boot web application built with Gradle, containerized with Docker, automated with GitHub Actions CI/CD, and equipped with REST APIs, health checks, and unit tests.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

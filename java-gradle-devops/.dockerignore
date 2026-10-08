@@ -1,0 +1,12 @@
+# Ignore local build outputs and VCS files
+.git
+.gitignore
+.github
+.gradle
+build
+out
+.idea
+*.iml
+.vscode
+*.log
+README.md
